@@ -4,6 +4,7 @@ let timer = null;
 let timerBreak = null;
 let current = null;
 let statusApp = "stop";
+let musicElement = new Audio();  // Elemento de audio para reproducir música
 
 const bAdd = document.querySelector("#bAdd");
 const itTask = document.querySelector("#itTask");
@@ -34,14 +35,14 @@ function createTask(value) {
 function renderTasks() {
   const html = tasks.map((task) => {
     return `
-        <div class="task">
+      <div class="task">
         <div class="completed">${
           task.completed
             ? "<span class='done'>Done</span>"
-            : `<button class="start-button" data-id="${task.id}">Start</button></div>`
-        }
-            <div class="title">${task.title}</div>
-        </div>`;
+            : `<button class="start-button" data-id="${task.id}">Empezar</button>`
+        }</div>
+        <div class="title">${task.title}</div>
+      </div>`;
   });
   const tasksContainer = document.querySelector("#tasks");
   tasksContainer.innerHTML = html.join("");
@@ -58,10 +59,11 @@ function renderTasks() {
 }
 
 function startButtonHandler(id) {
-  time = 0.5 * 60;
+  time = 25 * 60;
   current = id;
   const taskId = tasks.findIndex((task) => task.id === id);
   document.querySelector("#time #taskName").textContent = tasks[taskId].title;
+
   timer = setInterval(() => {
     timerHandler(id);
   }, 1000);
@@ -74,6 +76,7 @@ function timerHandler(id = null) {
     markComplete(id);
     clearInterval(timer);
     renderTasks();
+    playMusic(); // Reproducir música cuando finalice la tarea
     startBreak();
   }
 }
@@ -84,7 +87,7 @@ function markComplete(id) {
 }
 
 function startBreak() {
-  time = 1 * 60;
+  time = 15 * 60;
   document.querySelector("#time #taskName").textContent = "Break";
   timerBreak = setInterval(timerBreakHandler, 1000);
 }
@@ -96,6 +99,7 @@ function timerBreakHandler() {
     clearInterval(timerBreak);
     current = null;
     document.querySelector("#time #taskName").textContent = "";
+    musicElement.pause(); // Detener la reproducción de música después del descanso
     renderTime();
   }
 }
@@ -108,3 +112,9 @@ function renderTime() {
     seconds < 10 ? "0" : ""
   }${seconds}`;
 }
+
+// Función para establecer la fuente de música (reemplazar con la URL de tu archivo de música deseado)
+function setMusicSource(url) {
+  musicElement.setAttribute("src", url);
+}
+
